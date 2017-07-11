@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="UnityLauncher.Core.Commands.Projects.Project"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             x:Name="This"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row ="0" Height="24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Project:" DataContext="{Binding ElementName=This}" Visibility="{Binding AdditionalVisibility}" VerticalAlignment="Top"/>
+            <Label Grid.Column="1" DataContext="{Binding ElementName=This}" Content="{Binding Info.Name}" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="{Binding ProjectNameMargin}"/>
+        </Grid>
+        <Grid Grid.Row ="1"  DataContext="{Binding ElementName=This}" Visibility="{Binding AdditionalVisibility}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" DataContext="{Binding ElementName=This}" Content="{Binding AdditionalInfo}" FontSize="10" Foreground="#FF444444"/>
+            <Label Grid.Column="1" DataContext="{Binding ElementName=This}" Content="{Binding VersionInfo}" FontSize="10" Foreground="#FF444444"/>
+        </Grid>
+    </Grid>
+</UserControl>
