@@ -17,7 +17,7 @@ namespace UnityLauncher.Core.Commands.Projects
         public string AdditionalInfo => Info !=null && Info.Name != "---"? $"(Unity ver: {Info.Version}, author: {Info.Author})" : "";
 
         public string VersionInfo => Info != null && Info.Version != "---" && !string.IsNullOrEmpty(SelectEditorInfo?.Version)
-            ? (SelectEditorInfo.Version != Info.Version?"Selected another version of editor!":"") : "";
+            ? (SelectEditorInfo.Version != Info.Version?"Another version of editor selected!":"") : "";
 
         public Thickness ProjectNameMargin => AdditionalVisibility == Visibility.Visible
             ? new Thickness(0, 0, 0, 0)

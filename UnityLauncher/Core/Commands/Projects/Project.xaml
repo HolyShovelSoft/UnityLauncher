@@ -25,7 +25,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Label Grid.Column="0" DataContext="{Binding ElementName=This}" Content="{Binding AdditionalInfo}" FontSize="10" Foreground="#FF444444"/>
-            <Label Grid.Column="1" DataContext="{Binding ElementName=This}" Content="{Binding VersionInfo}" FontSize="10" Foreground="#FF444444"/>
+            <Label Grid.Column="1" DataContext="{Binding ElementName=This}" Content="{Binding VersionInfo}" FontSize="10" Foreground="#FF630000" FontWeight="Bold"/>
         </Grid>
     </Grid>
 </UserControl>

@@ -1,65 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Win32;
+using System.IO;
 using Newtonsoft.Json;
 using UnityLauncher.Interfaces;
 
 namespace UnityLauncher.Core
 {
-    public abstract class Settings
+    public static class Settings
     {
-        private const string RegKey = "Software\\HolyShovelSoft\\UnityLauncher";
+        private const string ConfigFileName = "config.json";
+        private static bool _isInited;
+        private static string _configFilePath;
+        private static Dictionary<string, Dictionary<string, string>> _settingValues;
 
-        private static readonly string[] DefaultUnityDirectoryPathes = 
+        private static void LoadValues()
         {
-            "C:\\Program Files\\",
-            "C:\\Program Files (x86)\\"
-        };
-
-        private static readonly string[] DefaultUnityDirectoryMasks =
-        {
-            "Unity*"
-        };
-
-        private struct SettingsWrapper<T>
-        {
-            public static readonly SettingsWrapper<T> Invalid = new SettingsWrapper<T>{Value = default(T)};
-
-            public T Value { get; set; }
-        }
-
-        private class RegystryOperation : IDisposable
-        {
-            private RegistryKey key;
-
-            public RegistryKey Key => key;
-
-            public RegystryOperation(string path)
+            if (_settingValues == null)
             {
-                key = Registry.CurrentUser.OpenSubKey(path, true);
-                if (key != null) return;
-                Registry.CurrentUser.CreateSubKey(path);
-                key = Registry.CurrentUser.OpenSubKey(path, true);
+                _settingValues = new Dictionary<string, Dictionary<string, string>>();
             }
-
-
-            public void Dispose()
+            _settingValues.Clear();
+            if (File.Exists(_configFilePath))
             {
-                key?.Close();
+                var str = File.ReadAllText(_configFilePath);
+                JsonConvert.PopulateObject(str, _settingValues);
             }
         }
+
+        private static void SaveValues()
+        {
+            if (_settingValues == null)
+            {
+                _settingValues = new Dictionary<string, Dictionary<string, string>>();
+            }
+            File.WriteAllText(_configFilePath, JsonConvert.SerializeObject(_settingValues, Formatting.Indented));
+        }
+        
 
         public static void Init()
         {
-            
+            if(_isInited) return;
+            _isInited = true;
+            _configFilePath = $"{AppDomain.CurrentDomain.BaseDirectory}{ConfigFileName}";
         }
 
         public static T GetSetting<T>(IBaseObject behavour, string key)
         {
             if (behavour != null)
             {
-                var subKey = behavour.SettingsStoreKey;
-                return GetSetting<T>(subKey, key).Value;
+                var subKey = string.IsNullOrEmpty(behavour.SettingsStoreKey)?"Default": behavour.SettingsStoreKey;
+                LoadValues();
+                Dictionary<string, string> subVals;
+                if (_settingValues.TryGetValue(subKey, out subVals))
+                {
+                    string valStr;
+                    if (subVals.TryGetValue(key, out valStr))
+                    {
+                        T val = JsonConvert.DeserializeObject<T>(valStr);
+                        return val;
+                    }
+                }
             }
             return default(T);
         }
@@ -68,80 +68,31 @@ namespace UnityLauncher.Core
         {
             if (behavour != null)
             {
-                var subKey = behavour.SettingsStoreKey;
-                SaveSetting<T>(subKey, key, new SettingsWrapper<T>{Value = value});
+                var subKey = string.IsNullOrEmpty(behavour.SettingsStoreKey) ? "Default" : behavour.SettingsStoreKey;
+                LoadValues();
+                Dictionary<string, string> subVals;
+                if (!_settingValues.TryGetValue(subKey, out subVals))
+                {
+                    subVals = new Dictionary<string, string>();
+                    _settingValues[subKey] = subVals;
+                }
+                subVals[key] = JsonConvert.SerializeObject(value);
+                SaveValues();
             }
         }
 
         public static void RemoveSetting(IBaseObject behavour, string key)
         {
-            if (behavour != null)
+            var subKey = string.IsNullOrEmpty(behavour.SettingsStoreKey) ? "Default" : behavour.SettingsStoreKey;
+            LoadValues();
+            Dictionary<string, string> subVals;
+            if (_settingValues.TryGetValue(subKey, out subVals))
             {
-                var subKey = behavour.SettingsStoreKey;
-                RemoveSetting(subKey, key);
-            }
-        }
-
-        private static string GetRelKey(string subKey)
-        {
-            return "Software\\HolyShovelSoft\\UnityLauncher" + (string.IsNullOrEmpty(subKey) ? "" : $"\\{subKey}");
-        }
-
-        private static SettingsWrapper<T> GetSetting<T>(string subKey, string key)
-        {
-            if (string.IsNullOrEmpty(key)) return SettingsWrapper<T>.Invalid;
-
-            var realKey = GetRelKey(subKey);
-
-            using (var op = new RegystryOperation(realKey))
-            {
-                var result = SettingsWrapper<T>.Invalid;
-
-                var str = op.Key?.GetValue(key) as string;
-                if (string.IsNullOrEmpty(str))
+                if (subVals.Remove(key))
                 {
-                    return result;
+                    SaveValues();
                 }
-
-                try
-                {
-                    result = JsonConvert.DeserializeObject<SettingsWrapper<T>>(str);
-                }
-                catch
-                {
-                    //
-                }
-                return result;
             }
-        }
-
-        private static void SaveSetting<T>(string subKey, string key, SettingsWrapper<T> value)
-        {
-            if(string.IsNullOrEmpty(key)) return;
-
-            var realKey = GetRelKey(subKey);
-
-            using (var op = new RegystryOperation(realKey))
-            {
-                op.Key?.SetValue(key, JsonConvert.SerializeObject(value), RegistryValueKind.String);
-            }
-        }
-
-        private static void RemoveSetting(string subKey, string key)
-        {
-            if (string.IsNullOrEmpty(key)) return;
-
-            var realKey = GetRelKey(subKey);
-
-            using (var op = new RegystryOperation(realKey))
-            {
-                op.Key?.DeleteValue(key, false);
-            }
-        }
-
-        private static string[] GetUnityRecentProjects()
-        {
-            return null;
         }
     }
 }

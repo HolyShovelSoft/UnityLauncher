@@ -1,7 +1,5 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Windows.Controls;
 using UnityLauncher.Core;
 using UnityLauncher.Core.Commands.Projects;
@@ -35,8 +33,8 @@ namespace UnityLauncher
 
         public MainWindow()
         {
-            _instance = this;
             Settings.Init();
+            _instance = this;
             Behaviours.Init(this);
             InitializeComponent();
             FillElements();
