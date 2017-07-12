@@ -1,2 +1,2 @@
 # UnityLauncher
-This is custom unity launcher project... just for personal purposes. If you want use it... its your deal. =)
+This is custom unity launcher project... just for personal purposes. If you want use it... do it at your own risk. =)
