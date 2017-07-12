@@ -76,13 +76,13 @@ namespace UnityLauncher
         private void UpdateLocationList()
         {
             if(unityVersion == null) return;
-            
+
+            var lastProject = SelectedEditor != null ? SelectedEditor.Path : Settings.GetSetting<string>(this, "LastSelectedProject");
+
             unityVersion.Items.Clear();
             unityVersion.Items.Add(new EditorInfo("---"));
 
             var idx = 0;
-
-            var lastProject = Settings.GetSetting<string>(this, "LastSelectedProject");
 
             int i = 1;
 

@@ -54,8 +54,8 @@
                 <Grid Grid.Row="4" Margin="0,2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="69*"/>
-                        <ColumnDefinition Width="25*"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="New mask" Grid.Column="0" MinWidth="100"></Label>
                     <TextBox x:Name="AddMaskText" Grid.Column="1" VerticalContentAlignment="Center" TextChanged="TextBox_TextChanged_1"></TextBox>
