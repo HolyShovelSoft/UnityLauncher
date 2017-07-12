@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using UnityLauncher.Interfaces;
 
@@ -8,7 +7,7 @@ namespace UnityLauncher.Core.Commands.RenderMode
     /// <summary>
     /// Interaction logic for RenderModeSelect.xaml
     /// </summary>
-    public partial class RenderModeSelect : ICommand
+    public partial class RenderModeSelect : ICommandBehaviour
     {
         private RenderMode selected;
      
@@ -41,7 +40,7 @@ namespace UnityLauncher.Core.Commands.RenderMode
                 comboBox.Items.Add(new RenderMode("OpenGL ES 3.1", "-force-gles31"));
                 comboBox.Items.Add(new RenderMode("OpenGL ES 3.2", "-force-gles32"));
 
-                var lastSelected = Settings.GetSetting(this, "LastSelected");
+                var lastSelected = Settings.GetSetting<string>(this, "LastSelected");
 
                 var idx = 0;
 
@@ -66,12 +65,10 @@ namespace UnityLauncher.Core.Commands.RenderMode
         {
             return this;
         }
-
-        public void OnSelectedEditorUpdate(EditorInfo targetInfo)
-        {
-        }
+        
 
         public bool IsValid => true;
+        public string SettingsStoreKey => "RenderMode";
 
         public string GetCommandLineArguments()
         {

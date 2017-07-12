@@ -9,22 +9,27 @@ namespace UnityLauncher.Core
     public static class Behaviours
     {
         private static readonly Dictionary<Type, IList> BehaviourLists = new Dictionary<Type, IList>();
-        private static readonly List<IBehavour> WorkedBehavours = new List<IBehavour>();
+        private static readonly List<IBaseObject> WorkedBehavours = new List<IBaseObject>();
         private static bool isInited;
         
-        public static void Init()
+        public static void Init(params IBaseObject[] predefinedBaseObjects)
         {
             if(isInited) return;
             isInited = true;
 
+            if (predefinedBaseObjects != null)
+            {
+                WorkedBehavours.AddRange(predefinedBaseObjects);
+            }
+
             var behavioursType = typeof(Behaviours).Assembly.GetTypes()
-                .Where(type => typeof(IBehavour).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface);
+                .Where(type => typeof(IBehaviour).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface).ToArray();
 
             foreach (var type in behavioursType)
             {
                 try
                 {
-                    var instance = Activator.CreateInstance(type) as ICommand;
+                    var instance = Activator.CreateInstance(type) as IBehaviour;
                     if (instance != null)
                     {
                         WorkedBehavours.Add(instance);
@@ -37,15 +42,7 @@ namespace UnityLauncher.Core
             }
         }
 
-        public static void OnSelectedEditorChange(EditorInfo newEditor)
-        {
-            for (int i = 0; i <= WorkedBehavours.Count - 1; i++)
-            {
-                WorkedBehavours[i].OnSelectedEditorUpdate(newEditor);
-            }
-        }
-
-        public static IList<T> GetBehaviourList<T>() where T: IBehavour
+        public static IList<T> GetBehaviourList<T>() where T: IBehaviour
         {
             IList tmp;
             if (!BehaviourLists.TryGetValue(typeof(T), out tmp) || !(tmp is List<T>))
@@ -63,6 +60,15 @@ namespace UnityLauncher.Core
                 }
             }
             return ((List<T>) tmp).AsReadOnly();
+        }
+
+        public static void SendMessage<T>(T message)
+        {
+            foreach (var behavour in WorkedBehavours)
+            {
+                var receiver = behavour as IMessageReceiver<T>;
+                receiver?.OnMessage(message);
+            }
         }
     }
 }

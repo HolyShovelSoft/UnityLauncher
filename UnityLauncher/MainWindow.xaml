@@ -5,33 +5,59 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Unity Launcher" Height="682.365" Width="751.053" ResizeMode="NoResize">
-    <Grid Margin="0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="10"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition/>
-            <RowDefinition Height="30"/>
-        </Grid.RowDefinitions>
-        <GroupBox Header="Parametres" Grid.Column="1" Grid.Row="1" >
-            <ScrollViewer BorderBrush="Black">
-                <StackPanel x:Name="Panel" Margin="0,0,4,0"/>
-            </ScrollViewer>
-        </GroupBox>
-        <Button x:Name="LaunchButton" Content="Launch" Grid.Column="1" Margin="0" Grid.Row="2" VerticalAlignment="Center" IsEnabled="False" Click="LaunchButton_Click"/>
-        <Grid Grid.Column="1" Grid.Row="0" Margin="0,2,0,0" VerticalAlignment="Center">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Label Content="Unity version" Grid.Column="0" Height="26" Width="79" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-            <ComboBox x:Name="UnityVersion" Grid.Column="1" VerticalAlignment="Top" SelectionChanged="UnityVersion_SelectionChanged" />
-        </Grid>
+    <Grid>
+        <TabControl>
+            <TabItem Header="Launch">
+                <Grid Margin="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="Launch params" Grid.Column="1" Grid.Row="1" >
+                        <ScrollViewer BorderBrush="Black">
+                            <StackPanel x:Name="Params" Margin="0,0,4,0"/>
+                        </ScrollViewer>
+                    </GroupBox>
+                    <Button x:Name="LaunchButton" Content="Launch" Grid.Column="1" Margin="0" Grid.Row="2" VerticalAlignment="Center" IsEnabled="False" Click="LaunchButton_Click"/>
+                    <Grid Grid.Column="1" Grid.Row="0" Margin="0,2,0,0" VerticalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Unity version" Grid.Column="0" Height="26" Width="79" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <ComboBox x:Name="UnityVersion" Grid.Column="1" VerticalAlignment="Top" SelectionChanged="UnityVersion_SelectionChanged" />
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Options">
+                <Grid Margin="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="10"/>
+                    </Grid.RowDefinitions>
+
+                    <GroupBox Header="Settings" Grid.Column="1" Grid.Row="1" >
+                        <ScrollViewer BorderBrush="Black">
+                            <StackPanel x:Name="Options" Margin="0,0,4,0"/>
+                        </ScrollViewer>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

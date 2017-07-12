@@ -1,6 +1,6 @@
 ﻿namespace UnityLauncher.Interfaces
 {
-    public interface ICommand : IBehavour
+    public interface ICommandBehaviour : ILaunchBehaviour
     {
         string GetCommandLineArguments();
     }

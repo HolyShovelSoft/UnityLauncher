@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using UnityLauncher.Interfaces;
 
 namespace UnityLauncher.Core
@@ -7,6 +9,24 @@ namespace UnityLauncher.Core
     public abstract class Settings
     {
         private const string RegKey = "Software\\HolyShovelSoft\\UnityLauncher";
+
+        private static readonly string[] DefaultUnityDirectoryPathes = 
+        {
+            "C:\\Program Files\\",
+            "C:\\Program Files (x86)\\"
+        };
+
+        private static readonly string[] DefaultUnityDirectoryMasks =
+        {
+            "Unity*"
+        };
+
+        private struct SettingsWrapper<T>
+        {
+            public static readonly SettingsWrapper<T> Invalid = new SettingsWrapper<T>{Value = default(T)};
+
+            public T Value { get; set; }
+        }
 
         private class RegystryOperation : IDisposable
         {
@@ -29,71 +49,81 @@ namespace UnityLauncher.Core
             }
         }
 
-        public static string GetMainSetting(string key)
+        public static void Init()
         {
-            return GetSetting("", key);
+            
         }
 
-        public static void SaveMainSetting(string key, string value)
-        {
-            SaveSetting("", key, value);
-        }
-
-        public static void RemoveMainSetting(string key)
-        {
-            RemoveSetting("", key);
-        }
-
-        public static string GetSetting(IBehavour behavour, string key)
+        public static T GetSetting<T>(IBaseObject behavour, string key)
         {
             if (behavour != null)
             {
-                var subKey = behavour.GetType().Name;
-                return GetSetting(subKey, key);
+                var subKey = behavour.SettingsStoreKey;
+                return GetSetting<T>(subKey, key).Value;
             }
-            return "";
+            return default(T);
         }
 
-        public static void SaveSetting(IBehavour behavour, string key, string value)
+        public static void SaveSetting<T>(IBaseObject behavour, string key, T value)
         {
             if (behavour != null)
             {
-                var subKey = behavour.GetType().Name;
-                SaveSetting(subKey, key, value);
+                var subKey = behavour.SettingsStoreKey;
+                SaveSetting<T>(subKey, key, new SettingsWrapper<T>{Value = value});
             }
         }
 
-        public static void RemoveSetting(IBehavour behavour, string key)
+        public static void RemoveSetting(IBaseObject behavour, string key)
         {
             if (behavour != null)
             {
-                var subKey = behavour.GetType().Name;
+                var subKey = behavour.SettingsStoreKey;
                 RemoveSetting(subKey, key);
             }
         }
 
-
-        private static string GetSetting(string subKey, string key)
+        private static string GetRelKey(string subKey)
         {
-            if (string.IsNullOrEmpty(key)) return "";
+            return "Software\\HolyShovelSoft\\UnityLauncher" + (string.IsNullOrEmpty(subKey) ? "" : $"\\{subKey}");
+        }
 
-            var realKey = "Software\\HolyShovelSoft\\UnityLauncher" + (string.IsNullOrEmpty(subKey) ? "" : $"\\{subKey}");
+        private static SettingsWrapper<T> GetSetting<T>(string subKey, string key)
+        {
+            if (string.IsNullOrEmpty(key)) return SettingsWrapper<T>.Invalid;
+
+            var realKey = GetRelKey(subKey);
 
             using (var op = new RegystryOperation(realKey))
             {
-                return op.Key?.GetValue(key) as string;
+                var result = SettingsWrapper<T>.Invalid;
+
+                var str = op.Key?.GetValue(key) as string;
+                if (string.IsNullOrEmpty(str))
+                {
+                    return result;
+                }
+
+                try
+                {
+                    result = JsonConvert.DeserializeObject<SettingsWrapper<T>>(str);
+                }
+                catch
+                {
+                    //
+                }
+                return result;
             }
         }
 
-        private static void SaveSetting(string subKey, string key, string value)
+        private static void SaveSetting<T>(string subKey, string key, SettingsWrapper<T> value)
         {
             if(string.IsNullOrEmpty(key)) return;
-            
-            var realKey = "Software\\HolyShovelSoft\\UnityLauncher" + (string.IsNullOrEmpty(subKey) ? "" : $"\\{subKey}");
+
+            var realKey = GetRelKey(subKey);
 
             using (var op = new RegystryOperation(realKey))
             {
-                op.Key?.SetValue(key, value, RegistryValueKind.String);
+                op.Key?.SetValue(key, JsonConvert.SerializeObject(value), RegistryValueKind.String);
             }
         }
 
@@ -101,12 +131,17 @@ namespace UnityLauncher.Core
         {
             if (string.IsNullOrEmpty(key)) return;
 
-            var realKey = "Software\\HolyShovelSoft\\UnityLauncher" + (string.IsNullOrEmpty(subKey) ? "" : $"\\{subKey}");
+            var realKey = GetRelKey(subKey);
 
             using (var op = new RegystryOperation(realKey))
             {
                 op.Key?.DeleteValue(key, false);
             }
+        }
+
+        private static string[] GetUnityRecentProjects()
+        {
+            return null;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace UnityLauncher.Core.Commands.Projects
     /// <summary>
     /// Interaction logic for ProjectSelect.xaml
     /// </summary>
-    public partial class ProjectSelect : ICommand
+    public partial class ProjectSelect : ICommandBehaviour, IMessageReceiver<EditorSelectionChangedMessage>
     {
         private const string IncorrectFolderWarningMessage = "Folder \"{0}\" not empty and not contain \"Assets\" subfolder. Do you want select another folder?";
 
@@ -54,11 +54,6 @@ namespace UnityLauncher.Core.Commands.Projects
         {
             Fill();
             return this;
-        }
-
-        public void OnSelectedEditorUpdate(EditorInfo targetInfo)
-        {
-            UpdateSelection();
         }
 
         private ProjectInfo GetProjectInfo(string path, int index)
@@ -201,6 +196,8 @@ namespace UnityLauncher.Core.Commands.Projects
             (Directory.GetFiles(selectedProject.Info.Path).Length == 0 && Directory.GetDirectories(selectedProject.Info.Path).Length == 0 
             || Directory.Exists(selectedProject.Info.Path + "\\Assets"));
 
+        public string SettingsStoreKey => "Projects";
+
         private void RecentlyProjects_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if(handUpdate) return;
@@ -299,5 +296,11 @@ namespace UnityLauncher.Core.Commands.Projects
                 }
             }
         }
+
+        public void OnMessage(EditorSelectionChangedMessage message)
+        {
+            UpdateSelection();
+        }
+        
     }
 }

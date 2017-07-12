@@ -40,6 +40,9 @@
     <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
@@ -81,6 +84,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Options\Locations\EditorLocationSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -89,6 +96,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Core\Commands\Projects\EditorSelectionChangedMessage.cs" />
     <Compile Include="Core\Commands\Projects\Project.xaml.cs">
       <DependentUpon>Project.xaml</DependentUpon>
     </Compile>
@@ -102,13 +110,22 @@
     <Compile Include="Core\Commands\RenderMode\RenderModeSelect.xaml.cs">
       <DependentUpon>RenderModeSelect.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Core\Interfaces\IBehavour.cs" />
-    <Compile Include="Core\Interfaces\ICommand.cs" />
+    <Compile Include="Core\Interfaces\IBaseObject.cs" />
+    <Compile Include="Core\Interfaces\IBehaviour.cs" />
+    <Compile Include="Core\Interfaces\ICommandBehaviour.cs" />
     <Compile Include="Core\Behaviours.cs" />
     <Compile Include="Core\EditorInfo.xaml.cs">
       <DependentUpon>EditorInfo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\Interfaces\ILaunchBehaviour.cs" />
+    <Compile Include="Core\Interfaces\IMessageReceiver.cs" />
+    <Compile Include="Core\Interfaces\IOptionsBehaviour.cs" />
+    <Compile Include="Core\Options\Locations\EditorLocations.cs" />
+    <Compile Include="Core\Options\Locations\EditorLocationSettings.xaml.cs">
+      <DependentUpon>EditorLocationSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Core\Settings.cs" />
+    <Compile Include="Core\Versions\MachineType.cs" />
     <Compile Include="Core\Versions\Version.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
