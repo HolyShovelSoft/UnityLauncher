@@ -45,6 +45,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -64,31 +65,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Core\Commands\Projects\Project.xaml">
+    <Page Include="Core\EditorInfoOld.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Core\Commands\Projects\ProjectSelect.xaml">
+    <Page Include="Core\LaunchSettings\Project\ProjectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Core\Commands\RenderMode\RenderMode.xaml">
+    <Page Include="Core\LaunchSettings\RenderMode\RenderModeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Core\Commands\RenderMode\RenderModeSelect.xaml">
+    <Page Include="Core\Options\Locations\EditorLocationsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Core\EditorInfo.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Core\Options\Locations\EditorLocationSettings.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Core\Common\MainWindow\MainWindowView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -96,43 +89,65 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Core\Commands\Projects\EditorSelectionChangedMessage.cs" />
-    <Compile Include="Core\Commands\Projects\Project.xaml.cs">
-      <DependentUpon>Project.xaml</DependentUpon>
+    <Compile Include="Core\Common\BaseClasses\Enableable\EnableableModel.cs" />
+    <Compile Include="Core\Common\BaseClasses\Enableable\EnableableModelView.cs" />
+    <Compile Include="Core\Interfaces\ILaunchCommandSource.cs" />
+    <Compile Include="Core\LaunchSettings\Project\ProjectInfo.cs" />
+    <Compile Include="Core\LaunchSettings\Project\ProjectModel.cs" />
+    <Compile Include="Core\LaunchSettings\Project\ProjectModelView.cs" />
+    <Compile Include="Core\LaunchSettings\Project\ProjectView.xaml.cs">
+      <DependentUpon>ProjectView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Core\Commands\Projects\ProjectInfo.cs" />
-    <Compile Include="Core\Commands\Projects\ProjectSelect.xaml.cs">
-      <DependentUpon>ProjectSelect.xaml</DependentUpon>
+    <Compile Include="Core\LaunchSettings\RenderMode\RenderModeInfo.cs" />
+    <Compile Include="Core\LaunchSettings\RenderMode\RenderModeModel.cs" />
+    <Compile Include="Core\Common\BaseClasses\BaseBehaviorModelView.cs" />
+    <Compile Include="Core\Common\BaseClasses\BaseModel.cs" />
+    <Compile Include="Core\Common\BaseClasses\EventHandlers\CancelCommandEventArgs.cs" />
+    <Compile Include="Core\Common\BaseClasses\EventHandlers\CancelCommandEventHandler.cs" />
+    <Compile Include="Core\Common\BaseClasses\Commands\Command.cs" />
+    <Compile Include="Core\Common\BaseClasses\EventHandlers\CommandEventArgs.cs" />
+    <Compile Include="Core\Common\BaseClasses\EventHandlers\CommandEventHandler.cs" />
+    <Compile Include="Core\Common\BaseClasses\Infos\EditorInfo.cs" />
+    <Compile Include="Core\Common\MainWindow\Messages\EditorLocationsChanged.cs" />
+    <Compile Include="Core\Common\MainWindow\MainWindowModelView.cs" />
+    <Compile Include="Core\Common\MainWindow\MainWindowModel.cs" />
+    <Compile Include="Core\Common\BaseClasses\Notifier.cs" />
+    <Compile Include="Core\Common\MainWindow\Messages\SelectedEditorChanged.cs" />
+    <Compile Include="Core\Common\Settings\SettingHolder.cs" />
+    <Compile Include="Core\Common\Settings\SettingHolderConverter.cs" />
+    <Compile Include="Core\Interfaces\IBehavior.cs" />
+    <Compile Include="Core\Interfaces\IContext.cs" />
+    <Compile Include="Core\Interfaces\IUIBehavior.cs" />
+    <Compile Include="Core\Interfaces\ILaunchCommandBehavior.cs" />
+    <Compile Include="Core\Behaviors.cs" />
+    <Compile Include="Core\EditorInfoOld.xaml.cs">
+      <DependentUpon>EditorInfoOld.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Core\Commands\RenderMode\RenderMode.xaml.cs">
-      <DependentUpon>RenderMode.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Core\Commands\RenderMode\RenderModeSelect.xaml.cs">
-      <DependentUpon>RenderModeSelect.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Core\Interfaces\IBaseObject.cs" />
-    <Compile Include="Core\Interfaces\IBehaviour.cs" />
-    <Compile Include="Core\Interfaces\ICommandBehaviour.cs" />
-    <Compile Include="Core\Behaviours.cs" />
-    <Compile Include="Core\EditorInfo.xaml.cs">
-      <DependentUpon>EditorInfo.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Core\Interfaces\ILaunchBehaviour.cs" />
+    <Compile Include="Core\Interfaces\ILaunchBehavior.cs" />
     <Compile Include="Core\Interfaces\IMessageReceiver.cs" />
-    <Compile Include="Core\Interfaces\IOptionsBehaviour.cs" />
-    <Compile Include="Core\Options\Locations\EditorLocations.cs" />
-    <Compile Include="Core\Options\Locations\EditorLocationSettings.xaml.cs">
-      <DependentUpon>EditorLocationSettings.xaml</DependentUpon>
+    <Compile Include="Core\Interfaces\IOptionsBehavior.cs" />
+    <Compile Include="Core\Interfaces\ISettingsProvider.cs" />
+    <Compile Include="Core\LaunchSettings\RenderMode\RenderModeModelView.cs" />
+    <Compile Include="Core\LaunchSettings\RenderMode\RenderModeView.xaml.cs">
+      <DependentUpon>RenderModeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Core\Settings.cs" />
-    <Compile Include="Core\Versions\MachineType.cs" />
-    <Compile Include="Core\Versions\Version.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="Core\Options\Locations\EditorLocationsView.xaml.cs">
+      <DependentUpon>EditorLocationsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Common\Settings\Settings.cs" />
+    <Compile Include="Core\Options\Locations\EditorLocationsModel.cs" />
+    <Compile Include="Core\Options\Locations\EditorLocationsModelView.cs" />
+    <Compile Include="Core\Tools\FileHelper.cs" />
+    <Compile Include="Core\Tools\BinnaryHelper.cs" />
+    <Compile Include="Core\Common\MainWindow\MainWindowView.xaml.cs">
+      <DependentUpon>MainWindowView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Common\BaseClasses\BaseModelView.cs" />
+    <Compile Include="Core\Tools\StringComparerConverter.cs" />
+    <Compile Include="Core\Tools\ThrededJob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

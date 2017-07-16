@@ -1,0 +1,125 @@
+﻿<Window x:Class="UnityLauncher.MainWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UnityLauncher.Core"
+        xmlns:common="clr-namespace:UnityLauncher.Core.Common"
+        mc:Ignorable="d"
+        x:Name="This"
+        Title="Unity Launcher" Height="682.365" Width="751.053" ResizeMode="NoResize"
+        d:DataContext="{d:DesignInstance common:MainWindowModelView, IsDesignTimeCreatable=False}">
+    <Window.Resources>
+        <Style TargetType="TextBlock" x:Key="ComboBoxItemVersionStyle">
+            <Setter Property="Visibility" Value="Visible"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=Version}" Value="{x:Null}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Version}" Value="">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="ComboBoxItemBinnaryStyle">
+            <Setter Property="Visibility" Value="Visible"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsX64}" Value="{x:Null}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="ComboBoxItemBinnary64Style">
+            <Setter Property="Visibility" Value="Visible"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsX64}" Value="False">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="ComboBoxItemBinnary86Style">
+            <Setter Property="Visibility" Value="Visible"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsX64}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <TabControl>
+            <TabItem Header="Launch">
+                <Grid Margin="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="Launch params" Grid.Column="1" Grid.Row="1" >
+                        <ScrollViewer BorderBrush="Black">
+                            <StackPanel x:Name="Params" Margin="0,0,4,0">
+                                <ItemsControl ItemsSource="{Binding Path=LaunchElements}"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </GroupBox>
+                    <Button Command="{Binding Path=LaunchCommand}" x:Name="LaunchButton" Content="Launch" Grid.Column="1" Margin="0" Grid.Row="2" VerticalAlignment="Center"/>
+                    <Grid Grid.Column="1" Grid.Row="0" Margin="0,2,0,0" VerticalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Unity version" Grid.Column="0" Width="79" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="UnityVersion" 
+                                  ItemsSource="{Binding Path=AvailibleEditors, Mode=OneWay}" 
+                                  SelectedIndex="{Binding Path=SelectedEditorIndex}"
+                                  Grid.Column="1" VerticalAlignment="Top">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="{x:Type  local:EditorInfo}">
+                                    <WrapPanel>
+                                        <TextBlock Text="{Binding Path=Version}" FontWeight="Bold" Style="{StaticResource ComboBoxItemVersionStyle}"/>
+                                        <TextBlock Text=" (" Style="{StaticResource ComboBoxItemBinnaryStyle}"></TextBlock>
+                                        <TextBlock Text="x64" Style="{StaticResource ComboBoxItemBinnary64Style}"></TextBlock>
+                                        <TextBlock Text="x32" Style="{StaticResource ComboBoxItemBinnary86Style}"></TextBlock>
+                                        <TextBlock Text=" )" Style="{StaticResource ComboBoxItemBinnaryStyle}"></TextBlock>
+                                        <TextBlock Text=" | " Style="{StaticResource ComboBoxItemVersionStyle}"/>
+                                        <TextBlock Text="{Binding Path=Path}"/>
+                                    </WrapPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Options">
+                <Grid Margin="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="10"/>
+                    </Grid.RowDefinitions>
+
+                    <GroupBox Header="Settings" Grid.Column="1" Grid.Row="1" >
+                        <ScrollViewer BorderBrush="Black">
+                            <StackPanel Margin="0,0,4,0">
+                                <ItemsControl ItemsSource="{Binding Path=OptionElements}"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
