@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
+using UnityLauncher.Core.LaunchSettings;
 using UnityLauncher.Interfaces;
 
 namespace UnityLauncher.Core.Common
@@ -19,6 +20,12 @@ namespace UnityLauncher.Core.Common
 
         private readonly Command launchCommand;
         public ICommand LaunchCommand => launchCommand;
+
+        public bool MustSelectNeededVersion
+        {
+            get => Model.SelectNeededVersion;
+            set => Model.SelectNeededVersion = value;
+        }
 
         private string title;
         public string Title
@@ -37,9 +44,15 @@ namespace UnityLauncher.Core.Common
         public MainWindowModelView(FrameworkElement uiElement) : base(uiElement)
         {
             Model.OnSelectedEditorChanged += UpdateEditorProperties;
+            Model.OnSelecteNeededVersionChanged += OnSelecteNeededVersionChanged;
             launchCommand = new Command(Model.LaunchUnity);
             launchCommand.CanExecute = Model.SelectedEditorInfo != null;
             ((MainWindowView)uiElement).OnCloseEvent += OnCloseEvent;
+        }
+
+        private void OnSelecteNeededVersionChanged()
+        {
+            NotifyPropertyChanged("MustSelectNeededVersion");
         }
 
         private void OnCloseEvent()

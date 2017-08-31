@@ -135,6 +135,7 @@
     <Compile Include="Core\LaunchSettings\Custom\CustomView.xaml.cs">
       <DependentUpon>CustomView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\LaunchSettings\Project\Messages\SelectedProjectChanged.cs" />
     <Compile Include="Core\LaunchSettings\Project\ProjectInfo.cs" />
     <Compile Include="Core\LaunchSettings\Project\ProjectModel.cs" />
     <Compile Include="Core\LaunchSettings\Project\ProjectModelView.cs" />

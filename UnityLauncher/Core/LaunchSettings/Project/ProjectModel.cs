@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
@@ -99,10 +100,20 @@ namespace UnityLauncher.Core.LaunchSettings
             {
                 if (value != selectedProject)
                 {
+                    if(selectedProject != null) selectedProject.PropertyChanged -= SelectedProjectOnPropertyChanged;
                     selectedProject = value;
+                    if (selectedProject != null) selectedProject.PropertyChanged += SelectedProjectOnPropertyChanged;
                     OnSelectedProjectChange?.Invoke();
                     Settings.Instance.SaveSetting(Context, "LastSelected", selectedProject?.Path);
                 }
+            }
+        }
+
+        private void SelectedProjectOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            if (propertyChangedEventArgs.PropertyName == "Version")
+            {
+                OnSelectedProjectChange?.Invoke();
             }
         }
 

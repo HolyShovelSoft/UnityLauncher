@@ -29,6 +29,7 @@ namespace UnityLauncher.Core.LaunchSettings
             NotifyPropertyChanged("SelectProjectCommand");
             selectedProjectPath = Model.SelectedProject?.Path;
             NotifyPropertyChanged("SelectedProjectPath");
+            Behaviors.SendMessage(new SelectedProjectChanged { selectedProject = Model.SelectedProject });
         }
 
         private void SelectedEditorChange(EditorInfo editorInfo)
@@ -45,6 +46,7 @@ namespace UnityLauncher.Core.LaunchSettings
             }
             NotifyPropertyChanged("SelectedProjectPath");
             NotifyPropertyChanged("SelectedProject");
+            Behaviors.SendMessage(new SelectedProjectChanged{selectedProject = Model.SelectedProject});
         }
 
         public ObservableCollection<ProjectInfo> RecentlyUsedProjects => Model.recentlyUsedProjects;

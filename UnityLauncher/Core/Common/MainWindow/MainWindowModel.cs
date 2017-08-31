@@ -5,13 +5,16 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityLauncher.Core.LaunchSettings;
 using System.Threading;
 using System.Windows;
 using UnityLauncher.Interfaces;
 
 namespace UnityLauncher.Core.Common
 {
-    public class MainWindowModel : BaseModel, IMessageReceiver<EditorLocationsChanged>
+    public class MainWindowModel : BaseModel, 
+        IMessageReceiver<EditorLocationsChanged>, 
+        IMessageReceiver<SelectedProjectChanged>
     {
         private struct PathWithVer
         {
@@ -24,11 +27,31 @@ namespace UnityLauncher.Core.Common
         }
 
         private Guid lastGuid;
+        private string lastSelectedProjectVersion;
 
         public event Action OnSelectedEditorChanged;
 
         private readonly List<ILaunchCommandSource> launchCommandSources = new List<ILaunchCommandSource>();
         public readonly ObservableCollection<EditorInfo> availibleEditors = new ObservableCollection<EditorInfo>();
+
+        public event Action OnSelecteNeededVersionChanged;
+        private bool selectNeededVersion = false;
+
+        public bool SelectNeededVersion
+        {
+            get => selectNeededVersion;
+            set
+            {
+                if(selectNeededVersion == value) return;
+                selectNeededVersion = value;
+                OnSelecteNeededVersionChanged?.Invoke();
+                Settings.Instance.SaveSetting(Context, "MustSelectNeededVersion", SelectNeededVersion);
+                if (value)
+                {
+                    TrySelectCorrectVersion(lastSelectedProjectVersion);
+                }
+            }
+        }
 
         private EditorInfo selectedEditorInfo;
         public EditorInfo SelectedEditorInfo
@@ -51,8 +74,10 @@ namespace UnityLauncher.Core.Common
         public override void Init(IContext context)
         {
             base.Init(context);
+            SelectNeededVersion = Settings.Instance.GetSetting<bool>(Context, "MustSelectNeededVersion");
             LoadPathes();
             Behaviors.SendMessage(new SelectedEditorChanged { selectEditorInfo = selectedEditorInfo });
+
         }
 
         private void LoadPathes()
@@ -148,8 +173,12 @@ namespace UnityLauncher.Core.Common
                                 selected = editorInfo;
                             }
                         }
-                        Behaviors.SendMessage(new EditorsFilled{infos = availibleEditors.ToArray()});
                         SelectedEditorInfo = selected;
+                        if (selectNeededVersion)
+                        {
+                            TrySelectCorrectVersion(lastSelectedProjectVersion);
+                        }
+                        Behaviors.SendMessage(new EditorsFilled{infos = availibleEditors.ToArray()});
                     }), new object[]{locs});
                 }
             });
@@ -194,6 +223,24 @@ namespace UnityLauncher.Core.Common
             {
                 launchCommandSources.Add(source);
             }
+        }
+
+        private void TrySelectCorrectVersion(string version)
+        {
+            if (string.IsNullOrEmpty(version)) return;
+            if (SelectedEditorInfo?.Version == version) return;
+            var neededEditor = availibleEditors.FirstOrDefault(info => info != null && info.Version == version);
+            if (neededEditor != null)
+            {
+                SelectedEditorInfo = neededEditor;
+            }
+        }
+
+        public void OnMessage(SelectedProjectChanged message)
+        {
+            lastSelectedProjectVersion = message.selectedProject?.Version;
+            if (!SelectNeededVersion) return;
+            TrySelectCorrectVersion(lastSelectedProjectVersion);
         }
     }
 }

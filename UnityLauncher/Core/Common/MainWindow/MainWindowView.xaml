@@ -55,7 +55,7 @@
                         <ColumnDefinition Width="10"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition/>
                         <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
@@ -70,15 +70,17 @@
                     <Grid Grid.Column="1" Grid.Row="0" Margin="0,2,0,0" VerticalAlignment="Center">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Unity version" Grid.Column="0" Width="79" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBlock Text="Unity version" Grid.Row="0" Grid.Column="0" Width="79" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <ComboBox x:Name="UnityVersion" 
                                   ItemsSource="{Binding Path=AvailibleEditors, Mode=OneWay}" 
                                   SelectedIndex="{Binding Path=SelectedEditorIndex}"
+                                  Grid.Row="0"
                                   Grid.Column="1" VerticalAlignment="Top">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate DataType="{x:Type  local:EditorInfo}">
@@ -94,6 +96,8 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Select version from project" VerticalAlignment="Center" Margin="0 2 4 2"></TextBlock>
+                        <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding Path=MustSelectNeededVersion}" Height="18" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></CheckBox>
                     </Grid>
                 </Grid>
             </TabItem>
