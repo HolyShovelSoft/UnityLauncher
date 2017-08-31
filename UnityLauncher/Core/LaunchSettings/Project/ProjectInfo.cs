@@ -17,7 +17,7 @@ namespace UnityLauncher.Core.LaunchSettings
             Version = "",
         };
 
-        public static ProjectInfo TryGetProjectInfo(string pathCandidate)
+        public static ProjectInfo TryGetProjectInfo(string pathCandidate, object parent = null)
         {
             if (string.IsNullOrEmpty(pathCandidate)) return null;
             if (Directory.Exists(pathCandidate) && (Directory.GetFiles(pathCandidate).Length == 0 &&
@@ -31,7 +31,8 @@ namespace UnityLauncher.Core.LaunchSettings
                     Path = pathCandidate,
                     Name = System.IO.Path.GetFileName(normalizedPath),
                     Author = "unknown",
-                    Version = "unknown"
+                    Version = "unknown",
+                    Parent = parent
                 };
                 var t = new Thread(() =>
                 {

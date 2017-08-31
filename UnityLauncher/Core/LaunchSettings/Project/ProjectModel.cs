@@ -74,11 +74,10 @@ namespace UnityLauncher.Core.LaunchSettings
                         {
                             idx = 0;
                         }
-                        var proj = ProjectInfo.TryGetProjectInfo(path);
+                        var proj = ProjectInfo.TryGetProjectInfo(path, Context);
                         if (proj != null)
                         {
                             proj.Idx = idx;
-                            proj.Parent = Context;
                             tmp.Add(proj);
                         }
                     }
@@ -127,7 +126,7 @@ namespace UnityLauncher.Core.LaunchSettings
 
             if (proj == null)
             {
-                proj = ProjectInfo.TryGetProjectInfo(path);
+                proj = ProjectInfo.TryGetProjectInfo(path, Context);
                 SelectedProject = proj;
             }
 
