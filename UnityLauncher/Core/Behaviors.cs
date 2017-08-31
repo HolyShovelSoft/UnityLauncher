@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityLauncher.Core.Attributes;
 using UnityLauncher.Interfaces;
 
@@ -25,7 +26,30 @@ namespace UnityLauncher.Core
 
             var behavioursType = typeof(Behaviors).Assembly.GetTypes()
                 .Where(type => typeof(IUIBehavior).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
-                .Where(type => type.GetCustomAttributes(typeof(NonInstanciatedBehaviorAttribute),false).Length == 0).ToArray();
+                .Where(type =>
+                {
+                    var attrs = type.GetCustomAttributes(typeof(NonInstanciatedBehaviorAttribute), false);
+                    for (var i = 0; i <= attrs.Length - 1; i++)
+                    {
+                        var attr = attrs[i] as NonInstanciatedBehaviorAttribute;
+                        if (attr != null)
+                        {
+                            if (string.IsNullOrEmpty(attr.flagPropertyName))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                var prop = type.GetProperty(attr.flagPropertyName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                                if (prop != null && prop.PropertyType == typeof(bool))
+                                {
+                                    return (bool) prop.GetValue(null);
+                                }
+                            }
+                        }
+                    }
+                    return true;
+                }).ToArray();
 
             foreach (var type in behavioursType)
             {

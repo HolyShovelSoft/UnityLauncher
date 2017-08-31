@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows.Forms;
 using UnityLauncher.Core.Attributes;
 using UnityLauncher.Core.LaunchSettings;
 using UnityLauncher.Interfaces;
