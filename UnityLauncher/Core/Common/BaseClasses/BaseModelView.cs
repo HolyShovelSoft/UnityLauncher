@@ -8,8 +8,6 @@ namespace UnityLauncher.Core
     {
         protected static readonly Dictionary<FrameworkElement, BaseModelView> ViewToModelView = new Dictionary<FrameworkElement, BaseModelView>();
 
-        public BaseModelView This => this;
-
         public static BaseModelView GetModelView(FrameworkElement uiElement)
         {
             if (uiElement == null) return null;

@@ -10,17 +10,6 @@
              d:DataContext="{d:DesignInstance launchSettings:ProjectModelView, IsDesignTimeCreatable=False}">
     <UserControl.Resources>
         <core:StringComparerConverter x:Key="StringComparerConverter" />
-        <Style TargetType="TextBlock" x:Key="EnabledTextBlock">
-            <Setter Property="Foreground" Value="Black"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding Path=IsEnabled}" Value="False" >
-                    <Setter Property="Foreground" Value="DimGray"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Path=Parent.IsEnabled}" Value="False" >
-                    <Setter Property="Foreground" Value="DimGray"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
         <Style TargetType="TextBlock" x:Key="SelectedEditorStyle" BasedOn="{StaticResource EnabledTextBlock}">
             <Setter Property="Visibility" Value="Visible"/>
             <Style.Triggers>
@@ -105,7 +94,7 @@
                 <WrapPanel Grid.Row="1" Margin="2,2,2,0">
                     <TextBlock Text="Unity version: " Style="{StaticResource EnabledTextBlock}"/>
                     <TextBlock Text="{Binding Path=Version}" Style="{StaticResource EnabledTextBlock}"/>
-                    <TextBlock Text=" (Another version of editro selected) " Style="{StaticResource SelectedEditorStyle}"/>
+                    <TextBlock Text=" (Another version of editor selected) " Style="{StaticResource SelectedEditorStyle}"/>
                     <TextBlock Text=", Author: " Style="{StaticResource EnabledTextBlock}"/>
                     <TextBlock Text="{Binding Path=Author}" Style="{StaticResource EnabledTextBlock}"/>
                 </WrapPanel>

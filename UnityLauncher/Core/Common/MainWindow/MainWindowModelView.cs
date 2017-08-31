@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using UnityLauncher.Interfaces;
@@ -10,17 +12,39 @@ namespace UnityLauncher.Core.Common
     public class MainWindowModelView : 
         BaseModelView<MainWindowModel>
     {
+        private const bool IsBeta = true;
+
         public override string ContextKey => "Default";
         public override IMessageReceiver MessageReceiver => Model;
 
         private readonly Command launchCommand;
         public ICommand LaunchCommand => launchCommand;
 
+        private string title;
+        public string Title
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(title))
+                {
+                    var ver = Assembly.GetExecutingAssembly().GetName().Version;
+                    title = $"Unity Launcher ({ver.Major}.{ver.Minor}.{ver.Build}{(IsBeta?"b":"f")}{ver.Revision})";
+                }
+                return title;
+            }
+        }
+
         public MainWindowModelView(FrameworkElement uiElement) : base(uiElement)
         {
             Model.OnSelectedEditorChanged += UpdateEditorProperties;
             launchCommand = new Command(Model.LaunchUnity);
             launchCommand.CanExecute = Model.SelectedEditorInfo != null;
+            ((MainWindowView)uiElement).OnCloseEvent += OnCloseEvent;
+        }
+
+        private void OnCloseEvent()
+        {
+            Behaviors.SendMessage(new CloseMessage());
         }
 
         private void UpdateEditorProperties()
@@ -70,19 +94,16 @@ namespace UnityLauncher.Core.Common
                 if (launchElements == null)
                 {
                     launchElements = new List<FrameworkElement>();
-                    var launchBehaviors = Behaviors.GetBehaviourList<ILaunchBehavior>();
-                    if (launchBehaviors != null)
+                    var launchBehaviors = Behaviors.GetBehaviourList<ILaunchBehavior>().OrderBy(behavior => behavior?.UiOrder);
+                    foreach (var beh in launchBehaviors)
                     {
-                        foreach (var beh in launchBehaviors)
+                        var ui = beh?.GetControl();
+                        if (ui != null)
                         {
-                            var ui = beh?.GetControl();
-                            if (ui != null)
-                            {
-                                launchElements.Add(ui);
-                            }
-                            var launchCommandSource = (beh as ILaunchCommandBehavior)?.LaunchCommandSource;
-                            Model.AddLaunchCommandSource(launchCommandSource);
+                            launchElements.Add(ui);
                         }
+                        var launchCommandSource = (beh as ILaunchCommandBehavior)?.LaunchCommandSource;
+                        Model.AddLaunchCommandSource(launchCommandSource);
                     }
                 }
                 return launchElements;
@@ -97,16 +118,13 @@ namespace UnityLauncher.Core.Common
                 if (optionElements == null)
                 {
                     optionElements = new List<FrameworkElement>();
-                    var optionBehaviors = Behaviors.GetBehaviourList<IOptionsBehavior>();
-                    if (optionBehaviors != null)
+                    var optionBehaviors = Behaviors.GetBehaviourList<IOptionsBehavior>().OrderBy(behavior => behavior?.UiOrder);
+                    foreach (var beh in optionBehaviors)
                     {
-                        foreach (var beh in optionBehaviors)
+                        var ui = beh?.GetControl();
+                        if (ui != null)
                         {
-                            var ui = beh?.GetControl();
-                            if (ui != null)
-                            {
-                                optionElements.Add(ui);
-                            }
+                            optionElements.Add(ui);
                         }
                     }
                 }

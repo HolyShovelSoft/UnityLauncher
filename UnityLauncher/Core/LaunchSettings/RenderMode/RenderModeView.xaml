@@ -8,14 +8,6 @@
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance launchSettings:RenderModeModelView, IsDesignTimeCreatable=False}">
     <UserControl.Resources>
-        <Style TargetType="TextBlock" x:Key="EnabledTextBlock">
-            <Setter Property="Foreground" Value="Black"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding Path=Parent.IsEnabled}" Value="False" >
-                    <Setter Property="Foreground" Value="DimGray"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
     </UserControl.Resources>
     <Grid>
         <GroupBox Header="{Binding Path=This}" Margin="0 2" HorizontalContentAlignment="Stretch">

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityLauncher.Core.Attributes;
 using UnityLauncher.Interfaces;
 
 namespace UnityLauncher.Core
@@ -23,7 +24,8 @@ namespace UnityLauncher.Core
             }
 
             var behavioursType = typeof(Behaviors).Assembly.GetTypes()
-                .Where(type => typeof(IUIBehavior).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface).ToArray();
+                .Where(type => typeof(IUIBehavior).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
+                .Where(type => type.GetCustomAttributes(typeof(NonInstanciatedBehaviorAttribute),false).Length == 0).ToArray();
 
             foreach (var type in behavioursType)
             {

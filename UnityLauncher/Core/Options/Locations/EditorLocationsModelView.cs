@@ -11,6 +11,7 @@ namespace UnityLauncher.Core.Options
 
         public ObservableCollection<string> Pathes => Model.pathes;
         public ObservableCollection<string> Masks => Model.masks;
+        public override int UiOrder => 0;
 
         public int PathesSelectionIndex
         {

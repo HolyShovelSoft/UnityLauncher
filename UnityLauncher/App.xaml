@@ -1,7 +1,19 @@
 ﻿<Application x:Class="UnityLauncher.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
-         
+        <BitmapImage x:Key="Icon" UriSource="icon.png"></BitmapImage>
+        <Style TargetType="TextBlock" x:Key="EnabledTextBlock">
+            <Setter Property="Foreground" Value="Black"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsEnabled}" Value="False" >
+                    <Setter Property="Foreground" Value="DimGray"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Parent.IsEnabled}" Value="False" >
+                    <Setter Property="Foreground" Value="DimGray"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </Application.Resources>
 </Application>

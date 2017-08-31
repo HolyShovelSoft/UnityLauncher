@@ -1,0 +1,92 @@
+﻿<UserControl x:Class="UnityLauncher.Core.Options.UsersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:options="clr-namespace:UnityLauncher.Core.Options"
+             xmlns:launchSettings="clr-namespace:UnityLauncher.Core.LaunchSettings"
+             xmlns:controls="clr-namespace:UnityLauncher.Core.Tools.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance options:UsersModelView, IsDesignTimeCreatable=False}">
+    <UserControl.Resources>
+        <Style TargetType="Button" x:Key="ShowPasswordButtonStyle">
+            <Setter Property="Content" Value="Show password"/>
+            <Setter Property="MinWidth" Value="93"></Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=PasswordIsShowed}" Value="True" >
+                    <Setter Property="Content" Value="Hide password"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <GroupBox Header="Users">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ScrollViewer Grid.Row="0" MaxHeight="120">
+                    <StackPanel Orientation="Vertical">
+                        <ItemsControl ItemsSource="{Binding Path=Users}" AlternationCount="{Binding Path=Users.Count}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type launchSettings:UserInfo}">
+                                    <Grid Margin="0 2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}, StringFormat={} {0}.}"/>
+                                        <TextBlock Text=" Name: " Grid.Column="1"></TextBlock>
+                                        <TextBox Text="{Binding Path=Name}" Grid.Column="2" FontWeight="Bold"></TextBox>
+                                        <TextBlock Text=" Password: " Grid.Column="3"></TextBlock>
+                                        <controls:UnsecurePasswordBox Grid.Column="4" FontWeight="Bold" Password="{Binding Path=Password}" ShowPassword="{Binding Path=PasswordIsShowed}"/>
+                                        <Button Grid.Column="5" Command="{Binding Path=Parent.ShowPasswordCommand}" Style="{StaticResource ShowPasswordButtonStyle}" CommandParameter="{Binding Path=This}" Margin="1 0 0 0"/>
+                                        <Button Grid.Column="6" Content=" Remove " Command="{Binding Path=Parent.RemoveUserCommand}" CommandParameter="{Binding Path=This}" Margin="1 0"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+                <Separator Grid.Row="1"></Separator>
+                <WrapPanel Grid.Row="2">
+                    <TextBlock Text="New user:" FontWeight="Bold"></TextBlock>
+                </WrapPanel>
+                <Grid Grid.Row="3" Margin="0 2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Name: "></TextBlock>
+                    <TextBox Text="{Binding Path=NewUserName, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" FontWeight="Bold"></TextBox>
+                    <TextBlock Grid.Column="2" Text=" Password: "></TextBlock>
+                    <controls:UnsecurePasswordBox Grid.Column="3" FontWeight="Bold" Password="{Binding Path=NewUserPassword, UpdateSourceTrigger=PropertyChanged}" ShowPassword="{Binding Path=PasswordIsShowed}"/>
+                    <Button Grid.Column="4" Style="{StaticResource ShowPasswordButtonStyle}" Command="{Binding Path=ShowPasswordCommand}" CommandParameter="{Binding Path=This}" Margin="1 0 0 0"></Button>
+                    <Button Grid.Column="5" Content=" Add " Command="{Binding Path=AddNewUserCommand}" Margin="1 0 0 0"></Button>
+                </Grid>
+                <Separator Grid.Row="4"></Separator>
+                <WrapPanel Grid.Row="5" HorizontalAlignment="Right">
+                    <Button Content="Save" Command="{Binding Path=SaveCommand}"  MinWidth="50" Margin="1 0 0 0"></Button>
+                    <Button Content="Revert" Command="{Binding Path=RevertCommand}" MinWidth="50" Margin="1 0 0 0"></Button>
+                </WrapPanel>
+            </Grid>
+        </GroupBox>   
+    </Grid>
+</UserControl>

@@ -6,9 +6,8 @@
         xmlns:local="clr-namespace:UnityLauncher.Core"
         xmlns:common="clr-namespace:UnityLauncher.Core.Common"
         mc:Ignorable="d"
-        x:Name="This"
-        Title="Unity Launcher" Height="682.365" Width="751.053" ResizeMode="NoResize"
-        d:DataContext="{d:DesignInstance common:MainWindowModelView, IsDesignTimeCreatable=False}">
+        Title="{Binding Path=Title}" Height="682.365" Width="751.053" ResizeMode="CanMinimize"
+        d:DataContext="{d:DesignInstance common:MainWindowModelView, IsDesignTimeCreatable=False}" Icon="/UnityLauncher;component/icon.png">
     <Window.Resources>
         <Style TargetType="TextBlock" x:Key="ComboBoxItemVersionStyle">
             <Setter Property="Visibility" Value="Visible"/>

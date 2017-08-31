@@ -1,6 +1,4 @@
-﻿using System;
-using System.Windows;
-using UnityLauncher.Interfaces;
+﻿using UnityLauncher.Interfaces;
 
 namespace UnityLauncher.Core
 {
@@ -35,7 +33,6 @@ namespace UnityLauncher.Core
         }
 
         private bool? isX64;
-
         public bool? IsX64
         {
             get => isX64;
@@ -51,20 +48,23 @@ namespace UnityLauncher.Core
 
         public string ContextKey => "EditorInfo";
 
+        protected EditorInfo(EditorInfo info)
+        {
+            Path = info.Path;
+            Version = info.Version;
+            IsX64 = info.IsX64;
+        }
+
+        protected void FillVersion()
+        {
+            Version = BinnaryHelper.GetUnityVersion(path);
+            IsX64 = BinnaryHelper.IsX64(path);
+        }
+
         public EditorInfo(string path)
         {
             Path = path;
-            ThrededJob.RunJob(this, () =>
-            {
-                var newVersion = BinnaryHelper.GetUnityVersion(path);
-                var newIs64 = BinnaryHelper.IsX64(path);
-                Application.Current.Dispatcher.BeginInvoke((Action<string, bool?>) ((ver, is64) =>
-                {
-                    Version = ver;
-                    IsX64 = is64;
-                }), 
-                newVersion, newIs64);
-            });
+            FillVersion();
         }
     }
 }

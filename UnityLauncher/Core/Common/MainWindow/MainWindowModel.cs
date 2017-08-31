@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using UnityLauncher.Interfaces;
 
@@ -17,8 +19,11 @@ namespace UnityLauncher.Core.Common
             public int first;
             public int second;
             public int third;
-            public long fourth;
+            public int fourth;
+            public string letters;
         }
+
+        private Guid lastGuid;
 
         public event Action OnSelectedEditorChanged;
 
@@ -70,7 +75,9 @@ namespace UnityLauncher.Core.Common
 
         private void FillEditors(string[] pathes, string[] masks)
         {
-            ThrededJob.RunJob(Context, () =>
+            lastGuid = Guid.NewGuid();
+            var tmpGuid = lastGuid;
+            var t = new Thread(() =>
             {
                 if (Application.Current != null)
                 {
@@ -94,45 +101,59 @@ namespace UnityLauncher.Core.Common
                             tmp.AddRange(subPathes);
                         }
                     }
+
                     var locs = tmp.Distinct().Select(s =>
                         {
-                            var verInfo = FileVersionInfo.GetVersionInfo(s + "\\Editor\\Unity.exe");
+                            var version = BinnaryHelper.GetUnityVersion(s);
+                            var splitVersion = version.Split('.');
                             var pathVer = new PathWithVer
                             {
                                 path = s,
-                                first = verInfo.FileMajorPart,
-                                second = verInfo.FileMinorPart,
-                                third = verInfo.FileBuildPart
                             };
-                            var lastPartStr =
-                                verInfo.FileVersion.Replace($"{pathVer.first}.{pathVer.second}.{pathVer.third}.", "");
-                            Int64.TryParse(lastPartStr, out pathVer.fourth);
+                            if (splitVersion?.Length >= 3)
+                            {
+                                Int32.TryParse(splitVersion[0], out pathVer.first);
+                                Int32.TryParse(splitVersion[1], out pathVer.second);
+                                var splitMinor = Regex.Split(splitVersion[2], "[\\D]");
+                                pathVer.letters = Regex.Match(splitVersion[2], "[\\D]").ToString().ToLower();
+                                if (splitMinor?.Length >= 2)
+                                {
+                                    Int32.TryParse(splitMinor[0], out pathVer.third);
+                                    Int32.TryParse(splitMinor[1], out pathVer.fourth);
+                                }
+                            }
                             return pathVer;
                         })
                         .OrderBy(ver => ver.first)
                         .ThenBy(ver => ver.second)
                         .ThenBy(ver => ver.third)
+                        .ThenBy(ver => ver.letters)
                         .ThenBy(ver => ver.fourth)
+                        .ThenBy(ver => ver.path)
                         .Select(ver => ver.path).ToArray();
 
                     Application.Current.Dispatcher.BeginInvoke((Action<string[]>)(locations =>
                     {
+                        if (lastGuid != tmpGuid)
+                        {
+                            return;
+                        }
+                        EditorInfo selected = null;
                         foreach (var loc in locations)
                         {
                             EditorInfo editorInfo = new EditorInfo(loc);
                             availibleEditors.Add(editorInfo);
-                            if (loc == lastPath && selectedEditorInfo == null)
+                            if (lastPath == loc)
                             {
-                                if (lastPath == loc)
-                                {
-                                    SelectedEditorInfo = editorInfo;
-                                }
+                                selected = editorInfo;
                             }
                         }
+                        Behaviors.SendMessage(new EditorsFilled{infos = availibleEditors.ToArray()});
+                        SelectedEditorInfo = selected;
                     }), new object[]{locs});
-                    
                 }
             });
+            t.Start();
         }
         
         public void OnMessage(EditorLocationsChanged message)
@@ -146,9 +167,15 @@ namespace UnityLauncher.Core.Common
             if (File.Exists(SelectedEditorInfo.Path + "\\Editor\\Unity.exe"))
             {
                 var path = SelectedEditorInfo.Path + "\\Editor\\Unity.exe";
-                var commands = GetCommands();
-                Process.Start(path, commands);
+                using (FileHelper.LockForFileOperation(path))
+                {
+                    var commands = GetCommands();
+                    var pid = Process.Start(path, commands);
+                    var t = pid.MainWindowTitle;
+
+                }
                 MainWindowView.Instance.Close();
+                Application.Current.Shutdown();
             }
         }
 

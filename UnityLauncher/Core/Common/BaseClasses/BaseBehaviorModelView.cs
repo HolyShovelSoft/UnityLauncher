@@ -3,7 +3,7 @@ using UnityLauncher.Interfaces;
 
 namespace UnityLauncher.Core
 {
-    public abstract class BaseBehaviorModelView<TModel, TView> : BaseModelView<TModel>, IUIBehavior where TModel : BaseModel, new() where TView : FrameworkElement, new()
+    public abstract class BaseBehaviorModelView<TModel, TView> : BaseModelView<TModel>, IUIBehavior where TModel : BaseModel, new() where TView : FrameworkElement, IInitializableView, new()
     {
         protected TView View { get; }
 
@@ -11,7 +11,10 @@ namespace UnityLauncher.Core
         {
             View = new TView();
             Init(View);
+            View.Init(this);
         }
+
+        public abstract int UiOrder { get; }
 
         public FrameworkElement GetControl()
         {

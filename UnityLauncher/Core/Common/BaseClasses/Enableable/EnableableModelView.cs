@@ -1,10 +1,11 @@
 ﻿using System.Windows;
+using UnityLauncher.Interfaces;
 
 namespace UnityLauncher.Core
 {
-    public abstract class EnableableModelView<TModel, TView> : BaseBehaviorModelView<TModel, TView> where TModel : EnableableModel, new() where TView : FrameworkElement, new()
+    public abstract class EnableableModelView<TModel, TView> : BaseBehaviorModelView<TModel, TView> where TModel : EnableableModel, new() where TView : FrameworkElement, IInitializableView , new()
     {
-        public bool IsEnabled
+        public virtual bool IsEnabled
         {
             get => Model.IsEnabled;
             set => Model.IsEnabled = value;

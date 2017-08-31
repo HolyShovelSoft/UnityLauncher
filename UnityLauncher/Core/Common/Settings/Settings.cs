@@ -3,12 +3,35 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UnityLauncher.Core.Common;
 using UnityLauncher.Interfaces;
 
 namespace UnityLauncher.Core
 {
-    public class Settings : ISettingsProvider
+    public class Settings : ISettingsProvider, IBehavior, IMessageReceiver<CloseMessage>
     {
+        public static readonly JsonSerializerSettings JsonSettings;
+        public static  readonly JsonSerializer Serializer; 
+
+        static Settings()
+        {
+            var contractResolver = new EncryptedStringPropertyResolver("Every-Dog_GoeS+To_HeaveN");
+            JsonSettings = new JsonSerializerSettings
+            {
+                ContractResolver = contractResolver,
+                Formatting = Formatting.Indented
+            };
+            Serializer = new JsonSerializer
+            {
+                ContractResolver = contractResolver
+            };
+        }
+
+        public static void Init()
+        {
+            _instance.LoadValues();
+        }
+
         public static readonly string[] DefaultUnityDirectoryPathes = {
             "C:\\Program Files",
             "C:\\Program Files (x86)"
@@ -20,8 +43,8 @@ namespace UnityLauncher.Core
         };
 
         private const string ConfigFileName = "settings.json";
-        public static ISettingsProvider Instance { get; } = new Settings();
-
+        private static readonly Settings _instance = new Settings();
+        public static ISettingsProvider Instance => _instance;
 
         private readonly string _configFilePath;
 
@@ -39,7 +62,7 @@ namespace UnityLauncher.Core
                 if (File.Exists(_configFilePath))
                 {
                     var str = File.ReadAllText(_configFilePath);
-                    JsonConvert.PopulateObject(str, _settingValues);
+                    JsonConvert.PopulateObject(str, _settingValues, JsonSettings);
                 }
             }
         }
@@ -52,7 +75,7 @@ namespace UnityLauncher.Core
             }
             using (FileHelper.LockForFileOperation(_configFilePath))
             {
-                File.WriteAllText(_configFilePath, JsonConvert.SerializeObject(_settingValues, Formatting.Indented));
+                File.WriteAllText(_configFilePath, JsonConvert.SerializeObject(_settingValues, JsonSettings));
             }
         }
 
@@ -66,14 +89,13 @@ namespace UnityLauncher.Core
             if (contextHolder != null)
             {
                 var subKey = string.IsNullOrEmpty(contextHolder.ContextKey)?"Default": contextHolder.ContextKey;
-                LoadValues();
                 Dictionary<string, JToken> subVals;
                 if (_settingValues.TryGetValue(subKey, out subVals))
                 {
                     JToken token;
                     if (subVals.TryGetValue(key, out token))
                     {
-                        var holder = token.ToObject<SettingHolder<T>>();
+                        var holder = token.ToObject<SettingHolder<T>>(Serializer);
                         if (holder != null)
                         {
                             return holder.Value;
@@ -91,30 +113,32 @@ namespace UnityLauncher.Core
             if (context != null)
             {
                 var subKey = string.IsNullOrEmpty(context.ContextKey) ? "Default" : context.ContextKey;
-                LoadValues();
                 Dictionary<string, JToken> subVals;
                 if (!_settingValues.TryGetValue(subKey, out subVals))
                 {
                     subVals = new Dictionary<string, JToken>();
                     _settingValues[subKey] = subVals;
                 }
-                subVals[key] = JToken.FromObject(new SettingHolder<T>{ Value = value });
-                SaveValues();
+                subVals[key] = JToken.FromObject(new SettingHolder<T>{ Value = value }, Serializer);
             }
         }
 
         public void RemoveSetting(IContext context, string key)
         {
             var subKey = string.IsNullOrEmpty(context.ContextKey) ? "Default" : context.ContextKey;
-            LoadValues();
             Dictionary<string, JToken> subVals;
             if (_settingValues.TryGetValue(subKey, out subVals))
             {
-                if (subVals.Remove(key))
-                {
-                    SaveValues();
-                }
+                subVals.Remove(key);
             }
+        }
+
+        public string ContextKey => "Settings";
+        public IMessageReceiver MessageReceiver => this;
+
+        public void OnMessage(CloseMessage message)
+        {
+            SaveValues();
         }
     }
 }

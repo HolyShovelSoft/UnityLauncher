@@ -7,6 +7,7 @@ namespace UnityLauncher.Core.LaunchSettings
     {
         public override string ContextKey => "RenderMode";
         public override IMessageReceiver MessageReceiver => null;
+        public override int UiOrder => 2;
 
         public RenderModeInfo Selected
         {

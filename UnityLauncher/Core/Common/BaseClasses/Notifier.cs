@@ -1,11 +1,15 @@
 ﻿using System.ComponentModel;
+using Newtonsoft.Json;
 
 namespace UnityLauncher.Core
 {
-    public abstract class Notifier : INotifyPropertyChanged
+    public abstract class Notifier: INotifyPropertyChanged
     {
-        public object parent;
+        [JsonIgnore]
+        public object This => this;
 
+        private object parent;
+        [JsonIgnore]
         public object Parent
         {
             get => parent;

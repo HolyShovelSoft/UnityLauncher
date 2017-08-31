@@ -11,6 +11,8 @@ namespace UnityLauncher.Core.LaunchSettings
         public override string ContextKey => "Project";
         public override IMessageReceiver MessageReceiver => Model;
         public ILaunchCommandSource LaunchCommandSource => Model;
+        public override int UiOrder => 0;
+
         public ProjectInfo SelectedProject
         {
             get => Model.SelectedProject;

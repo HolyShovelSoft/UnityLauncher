@@ -8,7 +8,7 @@ namespace UnityLauncher.Core
         public event Action OnEnableChange;
 
         private bool isEnabled;
-        public bool IsEnabled
+        public virtual bool IsEnabled
         {
             get => isEnabled;
             set

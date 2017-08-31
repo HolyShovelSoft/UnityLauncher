@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="UnityLauncher.Core.LaunchSettings.UserView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:launchSettings="clr-namespace:UnityLauncher.Core.LaunchSettings"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance launchSettings:UserModelView, IsDesignTimeCreatable=False}">
+    <UserControl.Resources>
+    </UserControl.Resources>
+    <Grid>
+        <GroupBox Header="{Binding Path=This}" Margin="0 2" HorizontalContentAlignment="Stretch">
+            <GroupBox.HeaderTemplate>
+                <DataTemplate>
+                    <WrapPanel VerticalAlignment="Center">
+                        <CheckBox IsChecked="{Binding Path=IsEnabled}" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalContentAlignment="Center"></CheckBox>
+                        <TextBlock Text=" User"/>
+                    </WrapPanel>
+                </DataTemplate>
+            </GroupBox.HeaderTemplate>
+            <Grid Margin="0 2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ComboBox IsEnabled="{Binding Path=IsEnabled}" Grid.Row="0" VerticalAlignment="Top" ItemsSource="{Binding Path=AvailibleUsers}" SelectedItem="{Binding Path=SelectedUser}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type launchSettings:UserInfo}">
+                            <TextBlock Text="{Binding Path=Name}" Style="{StaticResource EnabledTextBlock}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Grid IsEnabled="{Binding Path=IsEnabled}" Margin="0 2" Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="User: " Grid.Column="0" Style="{StaticResource EnabledTextBlock}"></TextBlock>
+                    <TextBox Grid.Column="1" Text="{Binding SelectedUserName, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                </Grid>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>

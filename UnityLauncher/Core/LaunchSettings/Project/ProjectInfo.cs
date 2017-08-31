@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Windows;
 using UnityLauncher.Interfaces;
 
@@ -32,10 +33,10 @@ namespace UnityLauncher.Core.LaunchSettings
                     Author = "unknown",
                     Version = "unknown"
                 };
-                ThrededJob.RunJob(project, () =>
+                var t = new Thread(() =>
                 {
                     var projectVersionPath = normalizedPath + "\\ProjectSettings\\ProjectVersion.txt";
-                    lock (FileHelper.LockForFileOperation(projectVersionPath))
+                    using (FileHelper.LockForFileOperation(projectVersionPath))
                     {
                         if (File.Exists(projectVersionPath))
                         {
@@ -48,7 +49,7 @@ namespace UnityLauncher.Core.LaunchSettings
                                     var tmp = line.Replace("m_EditorVersion", "").Replace(":", "").Trim();
                                     if (!string.IsNullOrEmpty(tmp) && Application.Current != null)
                                     {
-                                        Application.Current.Dispatcher.BeginInvoke((Action<string>)(ver =>
+                                        Application.Current.Dispatcher.BeginInvoke((Action<string>) (ver =>
                                         {
                                             project.Version = ver;
                                         }), tmp);
@@ -56,25 +57,25 @@ namespace UnityLauncher.Core.LaunchSettings
                                 }
                             }
                         }
+                    }
 
-                        var projectSettingsAsset = normalizedPath + "\\ProjectSettings\\ProjectSettings.asset";
-                        lock (FileHelper.LockForFileOperation(projectSettingsAsset))
+                    var projectSettingsAsset = normalizedPath + "\\ProjectSettings\\ProjectSettings.asset";
+                    using (FileHelper.LockForFileOperation(projectSettingsAsset))
+                    {
+                        if (File.Exists(projectSettingsAsset))
                         {
-                            if (File.Exists(projectSettingsAsset))
+                            foreach (var line in File.ReadLines(projectSettingsAsset))
                             {
-                                foreach (var line in File.ReadLines(projectSettingsAsset))
+                                if (string.IsNullOrEmpty(line)) continue;
+                                if (line.Trim().StartsWith("organizationId"))
                                 {
-                                    if (string.IsNullOrEmpty(line)) continue;
-                                    if (line.Trim().StartsWith("organizationId"))
+                                    var tmp = line.Replace("organizationId", "").Replace(":", "").Trim();
+                                    if (!string.IsNullOrEmpty(tmp) && Application.Current != null)
                                     {
-                                        var tmp = line.Replace("organizationId", "").Replace(":", "").Trim();
-                                        if (!string.IsNullOrEmpty(tmp) && Application.Current != null)
+                                        Application.Current.Dispatcher.BeginInvoke((Action<string>)(auth =>
                                         {
-                                            Application.Current.Dispatcher.BeginInvoke((Action<string>)(auth =>
-                                            {
-                                                project.Author = auth;
-                                            }), tmp);
-                                        }
+                                            project.Author = auth;
+                                        }), tmp);
                                     }
                                 }
                             }
@@ -82,6 +83,7 @@ namespace UnityLauncher.Core.LaunchSettings
                     }
                     
                 });
+                t.Start();
                 return project;
             }
             return null;
